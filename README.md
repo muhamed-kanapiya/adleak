@@ -2,6 +2,11 @@
 
 **Your landing page is leaking ad budget. AdLeak finds the leak in a real browser with [Kane CLI](https://www.testmuai.com/kane-cli/), lets Claude Code fix it, and has Kane prove the fix.**
 
+🎥 **Demo video:** https://www.youtube.com/watch?v=zxxuCp4ISco
+🌐 **Landing:** https://muhamed-kanapiya.github.io/adleak/
+
+![AdLeak](docs/thumbnail.png)
+
 Businesses pay for every Google Ads and Meta click. Then a typo in a button anchor, a form posting to the wrong endpoint, UTM tags that never reach the CRM, a Meta pixel that fires twice, a promo popup that covers the button on phones, or a slow chat widget quietly burns that budget. Linters and unit tests don't catch any of it, because these bugs only show up when a real visitor clicks through the page.
 
 AdLeak plays that visitor with Kane CLI. It turns what Kane finds into a **budget leak score** (and $/day at risk), then runs a closed loop:
