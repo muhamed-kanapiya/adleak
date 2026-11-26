@@ -1,0 +1,101 @@
+{
+  "url": "https://kanapiya.tech",
+  "dailyBudget": 30,
+  "generatedAt": "2026-11-25T21:06:41.016Z",
+  "rounds": [
+    {
+      "label": "Baseline",
+      "leakScore": 77,
+      "agentSummary": null,
+      "checks": [
+        {
+          "id": "cta",
+          "title": "Hero CTA leads to the form",
+          "severity": "high",
+          "leak": "Paid visitors click the main button and nothing happens: they bounce and you still pay for the click.",
+          "status": "failed",
+          "summary": "The test action selected a button in the fixed page header. That link did navigate to the contact area, but it did not leave the name and phone fields visible, so the required check correctly failed.\nUpdate the automation to identify and click a CTA inside the hero section, then immediately verify the name and phone fields without any scrolling.",
+          "failedRemarks": [
+            "assert: the click itself brought the lead form into view: the name and phone inputs are "
+          ],
+          "facts": [],
+          "note": null,
+          "durationSec": 57.8,
+          "credits": 23.910222500000003,
+          "testUrl": "https://test-manager.lambdatest.com/projects/01M8A1XJSD5FXBS71B5VXZYAR7/test-cases/01M8A82FZ90Y1X9GH6W4F3CMS4/dashboard/share/US_BM2OLQCQZCO747HNQ58ZYFV8W672OCTOR9HTCA15DYDUQT1WLJX3S016BBJ4E4DU?type=summary&agentView=true&fqdn=summary-page",
+          "ran": true
+        },
+        {
+          "id": "pixels",
+          "title": "Ad pixels fire exactly once per lead",
+          "severity": "critical",
+          "leak": "Missing conversions make Google Ads and Meta optimize blind; double-fired ones teach them on fake data. Either way you overpay.",
+          "status": "failed",
+          "summary": "No ad or analytics tags fired on page load.\nWaited for the Kanapiya.tech page to finish loading, as requested.\nConfirmed that the page loaded successfully and displayed its Google Ads content.\nRecorded 19 requests to Google, DoubleClick, and Yandex tracking services that occurred while the page loaded.",
+          "failedRemarks": [],
+          "facts": [
+            {
+              "label": "Tracking",
+              "value": "no ad / analytics tags detected",
+              "ok": false
+            }
+          ],
+          "note": null,
+          "durationSec": 54.1,
+          "credits": 15.139469999999998,
+          "testUrl": "https://test-manager.lambdatest.com/projects/01M8A1XJSD5FXBS71B5VXZYAR7/test-cases/01M8A84R9F5CEV9C40N5YFV5AD/dashboard/share/US_AT0KR9SANJGNGV98CCD59SG4W2R9HB9KIIWSZMK9JNZBMYD2DWJJFZSY3WXKIAE1?type=summary&agentView=true&fqdn=summary-page",
+          "ran": true
+        },
+        {
+          "id": "mobile",
+          "title": "Mobile: CTA visible and tappable",
+          "severity": "high",
+          "leak": "Most paid traffic is mobile. If a popup or layout bug hides the button on a phone, that share of the budget converts at zero.",
+          "status": "passed",
+          "summary": "You asked to tap the main call-to-action button without scrolling.\nThe “Смотреть услуги” button was fully visible on the first screen and was not blocked by a popup, banner, or overlay.\nThe button was tapped, opening the contact section.\nThe lead form’s name and contact-phone fields are visible.",
+          "failedRemarks": [],
+          "facts": [],
+          "note": null,
+          "durationSec": 106.5,
+          "credits": 24.743920000000003,
+          "testUrl": "https://test-manager.lambdatest.com/projects/01M8A1XJSD5FXBS71B5VXZYAR7/test-cases/01M8A878315EWQRCGGR8MKTQMW/dashboard/share/US_O0RBMG5VXDVS1GOO906KZMW4WQ92DJ09CHUXUVQR9RHYE0XPTFWIQDAQ12P0RQRR?type=summary&agentView=true&fqdn=summary-page",
+          "ran": true
+        },
+        {
+          "id": "speed",
+          "title": "Page loads fast (LCP < 2.5s)",
+          "severity": "medium",
+          "leak": "Slow first screens lose paid visitors before they see the offer, and page speed feeds into Google Ads landing-page experience.",
+          "status": "failed",
+          "summary": "The agent waited for the page, then moved straight to the LCP assertion. The evidence does not show any step that read the browser LCP metric or stored a numeric value in {{lcp_ms}}.\nAdd an explicit browser-performance measurement step after load, save its numeric LCP result to {{lcp_ms}}, log that value, and only then assert it is below 2500 ms. Capture CLS in the same way.",
+          "failedRemarks": [
+            "assert: {{lcp_ms}} is under 2500ms."
+          ],
+          "facts": [],
+          "note": null,
+          "durationSec": 75.5,
+          "credits": 13.25595,
+          "testUrl": "https://test-manager.lambdatest.com/projects/01M8A1XJSD5FXBS71B5VXZYAR7/test-cases/01M8A8BA7GY45GQG6V9A5BEHNH/dashboard/share/US_XLWMCICDNIK5A9R8XUGWJI1LGXZGD5V20TGQ2X1FAJAB4WY4ZFEA95DDIAFITPD8?type=summary&agentView=true&fqdn=summary-page",
+          "ran": true
+        },
+        {
+          "id": "health",
+          "title": "Page loads without JS errors or failed requests",
+          "severity": "medium",
+          "leak": "Broken scripts silently kill sliders, forms and tracking on some browsers, lowering conversion rate.",
+          "status": "failed",
+          "summary": "A request to the external address mdd.yandex.net was blocked because its security certificate could not be verified. This produced both a console error and a failed request, so the strict clean-page check could not pass.\nCheck the test browser's trusted certificate store and outbound network/proxy configuration, then verify the certificate served for the Yandex analytics endpoint. Exclude optional third-party analytics from this strict check only if that matches the test policy.\nevidence: console_error: Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID\nevidence: network_failure: GET https://mdd.yandex.net/ -> None FAILED (net::ERR_CERT_AUTHORITY_INVALID)",
+          "failedRemarks": [
+            "assert: There are no console errors and no network requests failed or returned 4xx/5xx."
+          ],
+          "facts": [],
+          "note": null,
+          "durationSec": 60.1,
+          "credits": 15.013669999999998,
+          "testUrl": "https://test-manager.lambdatest.com/projects/01M8A1XJSD5FXBS71B5VXZYAR7/test-cases/01M8A8E432YCQ2B91VRW1G4BDR/dashboard/share/US_FI9XSBUPORB2DKINS51BB576X95W97XJE6X37H7NWLKPCDU9VV0RIEV9EKDNBER3?type=summary&agentView=true&fqdn=summary-page",
+          "ran": true
+        }
+      ]
+    }
+  ]
+}

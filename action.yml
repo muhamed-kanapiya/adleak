@@ -1,0 +1,126 @@
+name: "AdLeak — ad budget leak check"
+description: "Kane CLI walks your landing page like a paid visitor (CTA, form, UTM, pixels, mobile, speed) and comments the budget leak score on the PR."
+branding:
+  icon: "dollar-sign"
+  color: "red"
+
+inputs:
+  url:
+    description: "Landing page URL to audit (a preview deploy, or http://localhost:PORT started by start-command)"
+    required: true
+  start-command:
+    description: "Optional command that serves the site in the background before the audit, e.g. 'npm run preview'"
+    default: ""
+  checks:
+    description: "Comma-separated subset: cta,form,utm,pixels,mobile,speed,match,health (empty = all)"
+    default: ""
+  expect:
+    description: "Pixels that must receive exactly one lead event: google_ads,ga4,meta,yandex,tiktok"
+    default: ""
+  ad:
+    description: "Ad headline for the message-match check"
+    default: ""
+  budget:
+    description: "Daily ad budget in USD, turns the score into money at risk"
+    default: ""
+  no-submit:
+    description: "Never submit real leads (true/false)"
+    default: "false"
+  fail-on-leak:
+    description: "Fail the job when the leak score is above 0 (true/false)"
+    default: "true"
+  username:
+    description: "TestMu username (secrets.LT_USERNAME)"
+    required: true
+  access-key:
+    description: "TestMu access key (secrets.LT_ACCESS_KEY)"
+    required: true
+  comment-on-pr:
+    description: "Post the leak table as a sticky PR comment (needs pull-requests: write)"
+    default: "true"
+
+outputs:
+  score:
+    description: "Budget leak score 0-100"
+    value: ${{ steps.audit.outputs.score }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Set up Chrome
+      id: chrome
+      uses: browser-actions/setup-chrome@v2
+      with:
+        chrome-version: stable
+
+    - name: Install Kane CLI and AdLeak
+      shell: bash
+      env:
+        CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+      run: |
+        [ -n "$CHROME_PATH" ] && echo "KANE_CLI_CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+        npm install -g @testmuai/kane-cli
+        cd "${{ github.action_path }}" && npm install --omit=dev --silent
+
+    - name: Authenticate Kane CLI
+      shell: bash
+      env:
+        LT_USERNAME: ${{ inputs.username }}
+        LT_ACCESS_KEY: ${{ inputs.access-key }}
+      run: kane-cli login --username "$LT_USERNAME" --access-key "$LT_ACCESS_KEY"
+
+    - name: Start site
+      if: inputs.start-command != ''
+      shell: bash
+      run: |
+        nohup bash -c "${{ inputs.start-command }}" > adleak-site.log 2>&1 &
+        for i in $(seq 1 30); do curl -sf "${{ inputs.url }}" > /dev/null && break; sleep 2; done
+
+    - name: Run AdLeak audit
+      id: audit
+      shell: bash
+      env:
+        KANE_CLI_CDP_TIMEOUT_MS: "60000"
+        KANE_CLI_CDP_RETRIES: "2"
+      run: |
+        ARGS=(audit "${{ inputs.url }}" --out adleak-report)
+        [ -n "${{ inputs.checks }}" ] && ARGS+=(--only "${{ inputs.checks }}")
+        [ -n "${{ inputs.expect }}" ] && ARGS+=(--expect "${{ inputs.expect }}")
+        [ -n "${{ inputs.ad }}" ] && ARGS+=(--ad "${{ inputs.ad }}")
+        [ -n "${{ inputs.budget }}" ] && ARGS+=(--budget "${{ inputs.budget }}")
+        [ "${{ inputs.no-submit }}" = "true" ] && ARGS+=(--no-submit)
+        set +e
+        node "${{ github.action_path }}/bin/adleak.js" "${ARGS[@]}"
+        CODE=$?
+        set -e
+        SCORE=$(node -e "const r=require('./adleak-report/report.json');console.log(r.rounds.at(-1).leakScore)" 2>/dev/null || echo 100)
+        echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+        cat adleak-report/summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+        [ "$CODE" = "2" ] && exit 2 || true
+
+    - name: Upload report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: adleak-report-${{ github.run_id }}
+        path: adleak-report/
+
+    - name: Comment on PR
+      if: always() && inputs.comment-on-pr == 'true' && github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: adleak
+        path: adleak-report/summary.md
+
+    - name: Gate
+      if: inputs.fail-on-leak == 'true'
+      shell: bash
+      run: |
+        if [ "${{ steps.audit.outputs.score }}" != "0" ]; then
+          echo "::error::AdLeak: landing leaks ad budget (score ${{ steps.audit.outputs.score }}/100). See the PR comment / report artifact."
+          exit 1
+        fi

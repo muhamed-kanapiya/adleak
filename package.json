@@ -1,0 +1,22 @@
+{
+  "name": "adleak",
+  "version": "0.1.0",
+  "description": "Find where your landing page leaks ad budget, then let an AI agent fix it. Verified with Kane CLI.",
+  "type": "module",
+  "bin": {
+    "adleak": "bin/adleak.js"
+  },
+  "scripts": {
+    "demo:reset": "node demo/reset.js",
+    "demo:serve": "node demo/server.js",
+    "audit:demo": "node bin/adleak.js audit http://localhost:4321 --budget 50 --expect google_ads,ga4,meta,yandex --ad \"Dental implants in 1 day from 150 000 KZT, free 3D scan\"",
+    "fix:demo": "node bin/adleak.js fix http://localhost:4321 --dir demo/site/public --budget 50 --expect google_ads,ga4,meta,yandex --ad \"Dental implants in 1 day from 150 000 KZT, free 3D scan\" --context \"Lead API: POST /api/lead with JSON {name, phone, utm}. Do not touch tracking IDs in SITE_CONFIG.\" --headed"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6"
+  },
+  "license": "MIT"
+}
