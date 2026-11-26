@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdLeak — find where your landing page leaks ad budget</title>
+<meta name="description" content="Kane CLI finds landing page bugs that waste ad spend, Claude Code fixes them, Kane CLI proves the fix. Pixels, forms, UTMs, mobile, speed.">
+<meta property="og:title" content="AdLeak — your landing is leaking ad budget">
+<meta property="og:description" content="Kane CLI finds it. Claude Code fixes it. Kane CLI proves it.">
+<meta property="og:image" content="https://muhamed-kanapiya.github.io/adleak/thumbnail.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
+<style>
+:root{--bg:#0b0d12;--panel:#12151d;--line:#232836;--txt:#e9ecf3;--mut:#8b93a7;--red:#ff5d5d;--amb:#ffb84d;--grn:#3ddc97;--vio:#a78bfa;--blu:#60a5fa}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{font:17px/1.6 Inter,ui-sans-serif,system-ui,"Segoe UI",Arial,sans-serif;color:var(--txt);background:radial-gradient(1000px 600px at 10% -10%,#ff5d5d1f,transparent 60%),radial-gradient(900px 600px at 100% 30%,#3ddc9714,transparent 60%),var(--bg)}
+a{color:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+.brand{font-weight:900;font-size:22px;letter-spacing:-.03em;background:linear-gradient(90deg,var(--red),var(--amb),var(--grn));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none}
+nav .links{display:flex;gap:22px;font-size:15px;color:var(--mut)}nav .links a{text-decoration:none}nav .links a:hover{color:var(--txt)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:12px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:var(--panel)}
+.btn.p{background:linear-gradient(90deg,var(--red),var(--amb));color:#160a0a;border:0}
+.btn:hover{transform:translateY(-1px)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:60px 0 40px}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amb);border:1px solid #ffb84d44;background:#ffb84d12;padding:6px 12px;border-radius:99px}
+h1{font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-.045em;margin:18px 0}
+h1 em{font-style:normal;color:var(--red)}
+.lead{color:var(--mut);font-size:19px;max-width:560px}
+.lead b{color:var(--txt)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+h2{font-size:clamp(30px,4vw,44px);letter-spacing:-.035em;line-height:1.1;margin-bottom:14px}
+.sec{padding:80px 0}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+.card h3{font-size:18px;margin-bottom:6px}.card p{color:var(--mut);font-size:15px}
+.card code{font:13px ui-monospace,Consolas,monospace;color:#ffc9c9;background:#0006;padding:2px 6px;border-radius:6px}
+.bug{border-left:4px solid var(--red)}
+.ck .ic{font-size:22px;margin-bottom:8px}
+.loop{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:20px}
+.video{position:relative;padding-top:56.25%;border-radius:20px;overflow:hidden;border:1px solid var(--line);margin-top:30px;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+pre{background:#07090d;border:1px solid var(--line);border-radius:16px;padding:20px;overflow:auto;font:14px/1.6 ui-monospace,Consolas,monospace;color:#c9d1e3;margin-top:20px}
+pre .c{color:var(--mut)}pre .g{color:var(--grn)}pre .r{color:var(--red)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.road{display:grid;gap:12px;margin-top:24px}
+.road div{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.road b{color:var(--vio);min-width:64px;font-size:14px;letter-spacing:.06em}
+.road span{color:var(--mut);font-size:15px}
+.contact{background:linear-gradient(135deg,#ff5d5d14,#3ddc9712);border:1px solid var(--line);border-radius:26px;padding:44px;display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
+.contact ul{list-style:none;padding:0;display:grid;gap:10px}
+.contact li a{display:flex;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;text-decoration:none;font-weight:600}
+.contact li a span{color:var(--mut);font-weight:500}
+footer{color:var(--mut);font-size:14px;padding:40px 0;border-top:1px solid var(--line);margin-top:60px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+/* svg animation */
+.drop{animation:fall 2.4s cubic-bezier(.5,0,.9,.6) infinite;opacity:0}
+@keyframes fall{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(150px);opacity:0}}
+.coin{animation:coin 2.2s ease-in infinite;opacity:0}
+@keyframes coin{0%{transform:translateY(-40px);opacity:0}20%{opacity:1}60%{transform:translateY(70px);opacity:1}100%{transform:translateY(80px);opacity:0}}
+.pulse{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}
+.dash{stroke-dasharray:8 10;animation:dash 1.2s linear infinite}@keyframes dash{to{stroke-dashoffset:-36}}
+.gauge{transition:stroke-dashoffset 2s ease}
+.reveal{opacity:0;transform:translateY(24px);transition:all .7s ease}.reveal.on{opacity:1;transform:none}
+@media(max-width:900px){.hero,.two,.contact{grid-template-columns:1fr}.grid3,.grid4{grid-template-columns:1fr 1fr}nav .links{display:none}}
+@media(max-width:560px){.grid3,.grid4{grid-template-columns:1fr}.contact{padding:26px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="#">💸 AdLeak</a>
+  <div class="links"><a href="#how">How it works</a><a href="#checks">Checks</a><a href="#demo">Demo</a><a href="#ci">CI</a><a href="#contact">Contact</a></div>
+  <a class="btn" href="https://github.com/muhamed-kanapiya/adleak">★ GitHub</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <span class="tag">Kane CLI Hackathon · open source</span>
+    <h1>Your landing page is <em>leaking</em> ad budget.</h1>
+    <p class="lead"><b>Kane CLI</b> finds it in a real browser. <b>Claude Code</b> fixes it. <b>Kane CLI</b> proves the fix. Broken forms, lost UTMs, missing or double-fired pixels, popups that hide the CTA on phones, slow first screens all caught before they burn another click.</p>
+    <div class="cta-row">
+      <a class="btn p" href="#demo">▶ Watch the 5-min demo</a>
+      <a class="btn" href="https://github.com/muhamed-kanapiya/adleak">View on GitHub</a>
+    </div>
+  </div>
+  <!-- animated hero illustration -->
+  <svg viewBox="0 0 460 400" role="img" aria-label="Money falling into a landing page and leaking out of cracks">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ff5d5d"/><stop offset=".5" stop-color="#ffb84d"/><stop offset="1" stop-color="#3ddc97"/></linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <g font-family="Inter,system-ui" font-weight="800" font-size="26" fill="#ffb84d" filter="url(#glow)">
+      <text x="110" y="40" class="coin">$</text><text x="200" y="30" class="coin" style="animation-delay:.5s">$</text>
+      <text x="290" y="44" class="coin" style="animation-delay:1s">$</text><text x="340" y="28" class="coin" style="animation-delay:1.6s">$</text>
+      <text x="160" y="24" class="coin" style="animation-delay:1.3s">$</text>
+    </g>
+    <rect x="70" y="110" width="320" height="210" rx="18" fill="#12151d" stroke="#232836" stroke-width="2"/>
+    <line x1="70" y1="140" x2="390" y2="140" stroke="#232836" stroke-width="2"/>
+    <circle cx="92" cy="125" r="5" fill="#2c3242"/><circle cx="108" cy="125" r="5" fill="#2c3242"/><circle cx="124" cy="125" r="5" fill="#2c3242"/>
+    <rect x="98" y="164" width="210" height="16" rx="6" fill="#232836"/><rect x="98" y="190" width="150" height="11" rx="5" fill="#1c2130"/>
+    <rect x="98" y="220" width="130" height="34" rx="9" fill="#0ea5a4" class="pulse"/>
+    <rect x="98" y="270" width="264" height="26" rx="7" fill="#1a1e29" stroke="#ff5d5d66" stroke-dasharray="4 4"/>
+    <text x="110" y="288" font-family="ui-monospace,Consolas,monospace" font-size="12" fill="#ff9b9b">POST /api/leads → 404</text>
+    <path d="M150 320 l8 10 -6 8 9 12" stroke="#0b0d12" stroke-width="5" fill="none"/>
+    <path d="M260 320 l-6 9 8 9 -5 11" stroke="#0b0d12" stroke-width="5" fill="none"/>
+    <path d="M340 320 l7 8 -7 10 6 10" stroke="#0b0d12" stroke-width="5" fill="none"/>
+    <g fill="#ff5d5d" font-family="Inter,system-ui" font-weight="800" font-size="20">
+      <text x="148" y="352" class="drop">$</text><text x="256" y="352" class="drop" style="animation-delay:.8s">$</text><text x="338" y="352" class="drop" style="animation-delay:1.5s">$</text>
+    </g>
+    <g font-family="Inter,system-ui" font-size="13" font-weight="700">
+      <rect x="300" y="60" width="140" height="34" rx="10" fill="#ff5d5d22" stroke="#ff5d5d66"/><text x="314" y="82" fill="#ff5d5d">Meta Lead ×2</text>
+      <rect x="0" y="80" width="128" height="34" rx="10" fill="#ffb84d1c" stroke="#ffb84d66"/><text x="12" y="102" fill="#ffb84d">utm-source ≠ _</text>
+    </g>
+  </svg>
+</header>
+
+<section class="sec reveal" id="problem">
+  <div class="kicker">The problem</div>
+  <h2>None of these break the build.<br><span style="color:var(--mut)">They just quietly waste money.</span></h2>
+  <div class="grid3">
+    <div class="card bug"><h3>Button goes nowhere</h3><p>CTA anchor typo <code>#lead-from</code>. Paid click → bounce.</p></div>
+    <div class="card bug"><h3>Lead form fails</h3><p><code>POST /api/leads → 404</code>. Lost at the last step.</p></div>
+    <div class="card bug"><h3>UTMs never reach the CRM</h3><p><code>utm-source</code> vs <code>utm_source</code>. No attribution.</p></div>
+    <div class="card bug"><h3>Pixel fires twice</h3><p>Meta Lead ×2 per lead. The algorithm learns from fake conversions.</p></div>
+    <div class="card bug"><h3>Popup hides the CTA</h3><p>Fine on desktop, 72% overlay on phones where most paid traffic lives.</p></div>
+    <div class="card bug"><h3>Slow first screen</h3><p>Synchronous chat widget → LCP 3.2 s. Visitors leave before the offer.</p></div>
+  </div>
+</section>
+
+<section class="sec reveal" id="how">
+  <div class="kicker">How it works</div>
+  <h2>A closed loop. The agent can't grade itself.</h2>
+  <p class="lead">Kane CLI runs every check in real Chrome and returns verdicts with evidence. Claude Code gets the failures and patches the site. Only Kane can turn a check green, then a full regression pass makes sure nothing else broke.</p>
+  <div class="loop">
+    <svg viewBox="0 0 1060 250" role="img" aria-label="Kane CLI audit, Claude Code fixes, Kane CLI re-verifies, loop until green, then report">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b93a7"/></marker></defs>
+      <g font-family="Inter,system-ui">
+        <rect x="20" y="70" width="230" height="110" rx="18" fill="#ff5d5d14" stroke="#ff5d5d88" stroke-width="2"/>
+        <text x="135" y="118" text-anchor="middle" font-size="22" font-weight="800" fill="#ff5d5d">Kane CLI</text>
+        <text x="135" y="146" text-anchor="middle" font-size="15" fill="#8b93a7">audits in real Chrome</text>
+        <rect x="415" y="70" width="230" height="110" rx="18" fill="#a78bfa14" stroke="#a78bfa88" stroke-width="2"/>
+        <text x="530" y="118" text-anchor="middle" font-size="22" font-weight="800" fill="#a78bfa">Claude Code</text>
+        <text x="530" y="146" text-anchor="middle" font-size="15" fill="#8b93a7">patches HTML / JS / copy</text>
+        <rect x="810" y="70" width="230" height="110" rx="18" fill="#3ddc9714" stroke="#3ddc9788" stroke-width="2"/>
+        <text x="925" y="118" text-anchor="middle" font-size="22" font-weight="800" fill="#3ddc97">Kane CLI</text>
+        <text x="925" y="146" text-anchor="middle" font-size="15" fill="#8b93a7">re-verifies the fix</text>
+        <path d="M250 125 H408" stroke="#8b93a7" stroke-width="2.5" fill="none" class="dash" marker-end="url(#ar)"/>
+        <text x="330" y="112" text-anchor="middle" font-size="13" fill="#8b93a7">evidence + values</text>
+        <path d="M645 125 H803" stroke="#8b93a7" stroke-width="2.5" fill="none" class="dash" marker-end="url(#ar)"/>
+        <text x="724" y="112" text-anchor="middle" font-size="13" fill="#8b93a7">re-run failed</text>
+        <path d="M925 180 V220 H530 V187" stroke="#ff5d5d99" stroke-width="2.5" fill="none" class="dash" marker-end="url(#ar)"/>
+        <text x="727" y="240" text-anchor="middle" font-size="13" fill="#ff9b9b">still failing → next round</text>
+        <path d="M925 70 V30 H135 V63" stroke="#3ddc9799" stroke-width="2.5" fill="none" class="dash" marker-end="url(#ar)"/>
+        <text x="530" y="22" text-anchor="middle" font-size="13" fill="#3ddc97">all green → full regression pass → report</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="sec reveal" id="checks">
+  <div class="kicker">8 checks, plain-English Kane objectives</div>
+  <h2>Everything between the ad click and the conversion.</h2>
+  <div class="grid4">
+    <div class="card ck"><div class="ic">🎯</div><h3>Hero CTA</h3><p>The click brings the form into view, without scrolling.</p></div>
+    <div class="card ck"><div class="ic">📝</div><h3>Lead form</h3><p>Submits, shows success, no errors.</p></div>
+    <div class="card ck"><div class="ic">🔗</div><h3>UTM capture</h3><p>Campaign tags are sent with the lead.</p></div>
+    <div class="card ck"><div class="ic">📡</div><h3>Ad pixels</h3><p>Google Ads, GA4, Meta, Yandex, TikTok each fire <b>exactly once</b>.</p></div>
+    <div class="card ck"><div class="ic">📱</div><h3>Mobile</h3><p>CTA visible and not covered by any popup.</p></div>
+    <div class="card ck"><div class="ic">⚡</div><h3>Speed</h3><p>Core Web Vitals: LCP under 2.5 s, CLS.</p></div>
+    <div class="card ck"><div class="ic">🪞</div><h3>Message match</h3><p>The first screen repeats the ad's promise and price.</p></div>
+    <div class="card ck"><div class="ic">🩺</div><h3>Health</h3><p>No console errors or failed requests.</p></div>
+  </div>
+</section>
+
+<section class="sec reveal" id="demo">
+  <div class="kicker">Demo</div>
+  <h2>Leak score 75 → 0, verified in a real browser.</h2>
+  <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/zxxuCp4ISco" title="AdLeak demo" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+</section>
+
+<section class="sec reveal" id="ci">
+  <div class="two">
+    <div>
+      <div class="kicker">Run it</div>
+      <h2>CLI, agency mode, GitHub Action.</h2>
+      <p class="lead">Audit any URL, auto-fix a site you serve locally, audit every client from one file (no fake leads are sent), or block PRs that break tracking with a sticky leak-score comment.</p>
+    </div>
+<pre><span class="c"># audit + auto-fix</span>
+adleak fix http://localhost:3000 --dir ./public \
+  --budget 100 --expect google_ads,ga4,meta
+
+<span class="c"># read-only audit of a live site</span>
+adleak audit https://client.com --no-submit
+
+<span class="c"># agency mode: one URL per line</span>
+adleak audit clients.txt --out leaks
+
+<span class="r">Leak score   75</span>  ──▶  <span class="g">0</span>   in 1 fix round
+<span class="g">+$38/day recovered</span></pre>
+  </div>
+</section>
+
+<section class="sec reveal" id="next">
+  <div class="kicker">Roadmap</div>
+  <h2>Next: SEO, GEO and AEO checks.</h2>
+  <p class="lead">The same loop works for anything a real browser can verify. Planned modules, and available on request for your sites:</p>
+  <div class="road">
+    <div><b>SEO</b><span>Titles, meta, canonicals, hreflang, indexability, broken links, structured data validity.</span></div>
+    <div><b>GEO</b><span>Generative Engine Optimization: is your content clear, citable and crawlable for AI search engines?</span></div>
+    <div><b>AEO</b><span>Answer Engine Optimization: FAQ / HowTo schema, concise answers, entity consistency.</span></div>
+    <div><b>CRO</b><span>Forms on every device, consent banners vs. tracking, thank-you page and call tracking.</span></div>
+  </div>
+</section>
+
+<section class="sec reveal" id="contact">
+  <div class="contact">
+    <div>
+      <div class="kicker">Built by</div>
+      <h2>Muhamed Kanapiya</h2>
+      <p class="lead">Web developer and Google Ads specialist (Kanapiya.tech, Astana). Want AdLeak running on your landing pages, a custom check, or an SEO / GEO / AEO audit? Write me.</p>
+    </div>
+    <ul>
+      <li><a href="https://t.me/muhamed_kanapiya">Telegram <span>@muhamed_kanapiya →</span></a></li>
+      <li><a href="https://kanapiya.tech">Website <span>kanapiya.tech →</span></a></li>
+      <li><a href="https://github.com/muhamed-kanapiya/adleak">GitHub <span>muhamed-kanapiya/adleak →</span></a></li>
+      <li><a href="https://t.me/qazaqbiz">Telegram channel <span>@qazaqbiz →</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<footer><span>AdLeak · Kane CLI finds it, Claude Code fixes it, Kane CLI proves it.</span><span>Built for the <a href="https://www.kaneclihack.sh/">Kane CLI Online Hackathon</a> · MIT</span></footer>
+</div>
+<script>
+const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add('on')), { threshold: .12 });
+document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
