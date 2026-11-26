@@ -3,3 +3,9 @@ demo/site/
 adleak-report/
 .context/
 *.evidence
+video/
+report-*/
+vocieover/
+voiceover/
+*.mp3
+*.mp4
